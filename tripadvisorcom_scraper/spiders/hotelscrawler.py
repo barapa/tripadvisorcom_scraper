@@ -37,8 +37,13 @@ class HotelsCrawler(BaseSpider):
         # Parse the page for hotels and yield them
         # if the page is a city page
 
-        hotel_urls = hxs.select('//a[contains(@class, "property_title")]/@href').extract()
 
+        hotel_urls = hxs.select('//a[contains(@class, "property_title")]/@href').extract()
+        if not hotel_urls:
+          hotel_divs = hxs.select("//div[contains(@class, 'geo_name')]")
+          hotel_urls = hotel_divs.select('.//a/@href').extract()
+
+        print hotel_urls
         if hotel_urls:
             for hotel_url in hotel_urls:
                 yield Request(url_start + hotel_url, self.parse)
